@@ -155,6 +155,37 @@ def dashboard():
 @app.route('/profile')
 @is_logged_in
 def profile():
+    cur = mysql.connection.cursor()
+    app.logger.info(session['Type_Acc'])
+
+    if session['Type_Acc'] == 'Artist':
+        result = cur.execute("SELECT * FROM profile_a WHERE Username = %s ",[session['Username']])
+
+        #fetchall
+        profi = cur.fetchone()
+        app.logger.info(profi['Username'])
+        if result > 0:
+                #for second time users
+            return render_template('profile.html', profi=profi)
+            cur.close()
+        else:
+                #for first time
+            cur.close()
+            return redirect(url_for('profile_a'))
+    else:
+        result = cur.execute("SELECT * FROM profile_b WHERE Username = %s ",[session['Username']])
+
+        profi = cur.fetchone()
+
+        if result > 0:
+                #for second time users
+            return render_template('profile.html', profi=profi)
+            cur.close()
+        else:
+                #for first time
+            cur.close()
+            return redirect(url_for('profile_a'))
+
     return render_template('profile.html')
 
 #profile form  for artist edit
@@ -239,7 +270,7 @@ def profile_a():
 
         cur.close()
         flash('Profile Updated..','success')
-        return redirect(url_for('profile'))
+        #return redirect(url_for('profile'))
 
     return render_template('profile_edit.html', form=form, form1=form1)
 

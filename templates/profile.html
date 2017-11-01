@@ -1,7 +1,29 @@
 {% extends "layout.html" %}
 
 {% block body %}
-  <h1>Tasheer</h1>
   <h1>Profile <small> welcome {{session.Username}}</small></h1>
   <a class= 'btn btn-primary' href="/profile/edit">Edit</a>
+
+  <div class="jumbotron text-left">
+   <ul class="list_group">
+     {% if session.Type_Acc == 'Artist': %}
+     <li>Username: {{session.Username}}</li>
+     <li>First Name: {{profi.First_name}}</li>
+     <li>Lastname: {{profi.Last_name}}</li>
+     <li>About: {{profi.About}}</li>
+     <li>Genre: {{profi.Genre}}</li>
+     <li>Location: {{profi.Location}}</li>
+     <li>Experience: {{profi.Experience}}</li>
+     <li>Language: {{profi.Language}}</li>
+     {% else %}
+     <li>Username: {{session.Username}}</li>
+     <li>First Name: {{profi.First_name}}</li>
+     <li>Lastname: {{profi.Last_name}}</li>
+     <li>About: {{profi.About}}</li>
+     <li>Location: {{profi.Location}}</li>
+     <li>Language: {{profi.Language}}</li>
+     {% endif %}
+   </ul>
+  </div>
+
 {% endblock %}
