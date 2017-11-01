@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block body %}
+   <div class="jumbotron text-left">
+     <h1>Register</h1>
+     {% from 'include/_formhelpers.html' import render_field %}
+     <form class="" action="" method="POST">
+       <div class="form-group">
+         {{render_field(form.Username,class_="form-control")}}
+       </div>
+       <div class="form-group">
+         {{render_field(form.Email,class_="form-control")}}
+       </div>
+       <div class="form-group">
+         {{render_field(form.Password,class_="form-control")}}
+       </div>
+       <div class="form-group">
+         {{render_field(form.Confirm,class_="form-control")}}
+       </div>
+       <div class="form-group">
+         {{render_field(form.Type_Acc,class_="form-control")}}
+       </div>
+       <p><input type="submit" class="btn btn-primary" value="submit"></p>
+     </form>
+   </div>
+{% endblock %}

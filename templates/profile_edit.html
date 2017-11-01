@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block body %}
+   <div class="jumbotron text-left">
+     <h1>Profile</h1>
+     <small>welcome {{session.Username}}</small>
+     {% from 'include/_formhelpers.html' import render_field %}
+     {% if session.Type_Acc == 'Artist': %}
+     <form class="" action="" method="POST">
+       <div class="form-group">
+         {{render_field(form.First_name,class_="form-control")}}
+       </div>
+       <div class="form-group">
+         {{render_field(form.Last_name,class_="form-control")}}
+       </div>
+       <div class="form-group">
+         {{render_field(form.About,class_="form-control")}}
+       </div>
+       <div class="form-group">
+         {{render_field(form.Genre,class_="form-control")}}
+       </div>
+       <div class="form-group">
+         {{render_field(form.Location,class_="form-control")}}
+       </div>
+       <div class="form-group">
+         {{render_field(form.Experience,class_="form-control")}}
+       </div>
+       <div class="form-group">
+         {{render_field(form.Language,class_="form-control")}}
+       </div>
+       <p><input type="submit" class="btn btn-primary" value="submit"/></p>
+     </form>
+     {% endif %}
+     {% if session.Type_Acc == "Business": %}
+     <form class="" action="" method="POST">
+       <div class="form-group">
+         {{render_field(form1.First_name,class_="form-control")}}
+       </div>
+       <div class="form-group">
+         {{render_field(form1.Last_name,class_="form-control")}}
+       </div>
+       <div class="form-group">
+         {{render_field(form1.About,class_="form-control")}}
+       </div>
+       <div class="form-group">
+         {{render_field(form1.Location,class_="form-control")}}
+       </div>
+       <div class="form-group">
+         {{render_field(form1.Language,class_="form-control")}}
+       </div>
+       <p><input type="submit" class="btn btn-primary" value="submit"/></p>
+     </form>
+     {% endif %}
+   </div>
+{% endblock %}
