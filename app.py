@@ -245,17 +245,19 @@ def profile_a():
         return redirect(url_for('profile'))
 
     #business
-    elif  session['Type_Acc'] == "Business":
+    #else:
+    elif request.method == 'POST' and session['Type_Acc'] == "Business":
         Username = session['Username']
         First_name = form1.First_name.data
         Last_name = form1.Last_name.data
         About = form1.About.data
         Location = form1.Location.data
         Language = form1.Language.data
-        app.logger.info(session['Type_Acc'])
+
 
             #cursor
         cur = mysql.connection.cursor()
+        #app.logger.info(session['Type_Acc'])
             #database
         result = cur.execute("SELECT * FROM profile_b WHERE Username = %s ",[Username])
 
@@ -267,11 +269,10 @@ def profile_a():
             cur.execute("INSERT INTO profile_b(Username,First_name,Last_name,About,Location,Language) VALUES(%s, %s, %s, %s, %s, %s)", (Username,First_name,Last_name,About,Location,Language))
 
         mysql.connection.commit()
-
         cur.close()
-        flash('Profile Updated..','success')
-        #return redirect(url_for('profile'))
 
+        flash('Profile Updated..','success')
+        return redirect(url_for('profile'))
     return render_template('profile_edit.html', form=form, form1=form1)
 
 if __name__ == '__main__':
