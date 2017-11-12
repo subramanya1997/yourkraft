@@ -34,9 +34,21 @@ def index():
 def about():
     return render_template('about.html')
 
-@app.route('/articles')
+@app.route('/artist')
 def articles():
-    return render_template('articles.html', articles = Articles)
+    cur = mysql.connection.cursor()
+
+    result = cur.execute("SELECT * FROM profile_a")
+    artists = cur.fetchall()
+    app.logger.info(artists)
+    if result > 0:
+        return render_template('articles.html', artists=artists)
+    else:
+        msg = "No artist available "
+        return render_template('articles.html', msg=msg)
+
+    cur.close()
+    return render_template('articles.html', )
 
 #single article
 @app.route('/article/<string:id>/')
@@ -157,9 +169,9 @@ def dashboard():
 
 
 #Profile Page
-@app.route('/profile')
+@app.route('/profile/<string:id>/')
 @is_logged_in
-def profile():
+def profile(id):
     cur = mysql.connection.cursor()
     app.logger.info(session['Type_Acc'])
 
@@ -192,7 +204,7 @@ def profile():
             cur.close()
             return redirect(url_for('profile_a'))
 
-    return render_template('profile.html')
+    return render_template('profile.html',id=id)
 
 #profile form  for artist edit
 class Profile_A(Form):
@@ -242,7 +254,7 @@ def profile_a():
 
         #upload
         if filename != None:
-            Profile_pic.save('static/upload/img/'+Username+'.profile.jpg')
+            Profile_pic.save('static/upload/img/'+Username+'.avatar.jpg')
             filename = Username+'.avatar.jpg'
 
 
@@ -261,7 +273,7 @@ def profile_a():
         cur.close()
 
         flash('Profile Updated..','success')
-        return redirect(url_for('profile'))
+        return redirect(url_for('profile',id=Username))
 
     #business
     #else:
@@ -286,7 +298,7 @@ def profile_a():
 
         #File save
         if filename != None:
-            Profile_pic.save('static/upload/img/'+Username+'.profile.jpg')
+            Profile_pic.save('static/upload/img/'+Username+'.avatar.jpg')
             filename = Username+'.avatar.jpg'
 
 
@@ -303,7 +315,7 @@ def profile_a():
         cur.close()
 
         flash('Profile Updated..','success')
-        return redirect(url_for('profile'))
+        return redirect(url_for('profile',id=Username))
     return render_template('profile_edit.html', form=form, form1=form1)
 
 if __name__ == '__main__':

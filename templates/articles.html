@@ -1,14 +1,25 @@
 {% extends "layout.html" %}
 
 {% block body %}
- <div class="jumbotron text-center">
-   <h1>Articles</h1>
-  <ul class="list_group">
-    {% for article in articles %}
-       <li class="list-group-item">
-         <a href="article/{{article.id}}">{{article.title}}</a>
-       </li>
-    {% endfor %}
-  </ul>
- </div>
+  <h1>Articles</h1>
+  <div class="container">
+    <div class="card-columns">
+      {% for artist in artists %}
+        <div class="card card-outline-info " style="width: 20rem;" >
+          {% if artist.Profile_pic == None : %}
+          <img class="card-img-top img-fluid img-thumbnail " src="static/img/avatar.jpg" alt="Profile Pic"/>
+          {% else %}
+          <img class="card-img-top img-fluid img-thumbnail img-fluid" src="{{url_for('static',filename='upload/img/'+artist.Profile_pic)}}" alt="Profile Pic"/>
+          {% endif %}
+          <div class="card-block text-center" style="width: 20rem;hight: 20rem;">
+            <h4 class="card-title">@{{artist.Username}}</h4>
+            <p class="card-text">{{artist.About}}</p>
+            <p class="card-text"><small class="text-muted">{{artist.Genre}}</small></p>
+            <a class="btn btn-outline-dark" href="/profile/{{artist.Username}}/">View Profile</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    </div>
+
 {% endblock %}

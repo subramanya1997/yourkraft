@@ -12,16 +12,12 @@
     <img class="card-img-top" src="{{url_for('static',filename='upload/img/'+profi.Profile_pic)}}" alt="Profile Pic"/>
     {% endif %}
   </div>
-  <div class="container">
-    <div class="row">
-      <div class="col-4">
-        {% if session.Type_Acc == 'Artist' and profi.Username == session.user: %}
-        <a class='btn btn-lg btn-primary float-center' href="/profile/edit">Edit</a>
+  <div class="card" style="width: 20rem;">
+        {% if session.Type_Acc == 'Artist' and profi.Username == session.Username: %}
+        <a class='btn btn-primary' href="/profile/edit">Edit</a>
         {% else %}
         <a class="btn btn-outline-dark">Book Artist</a>
         {% endif %}
-      </div>
-    </div>
   </div>
   <div class="card card-outline-info" style="width: 20rem;hight: 20rem;">
     {% if session.Type_Acc == 'Artist': %}
