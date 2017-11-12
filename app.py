@@ -1,11 +1,16 @@
+import os
 from flask import Flask, render_template,request,flash,redirect,url_for,session,logging
 from data import Articles
 from flask_mysqldb import MySQL
-from wtforms import Form,IntegerField,StringField,TextAreaField,PasswordField,validators,SelectField
+from wtforms import Form,IntegerField,StringField,TextAreaField,FileField,PasswordField,validators,SelectField
+from flask_wtf import FlaskForm
+from flask_wtf.file import FileRequired
 from passlib.hash import sha256_crypt
 from functools import wraps
+from werkzeug.utils import secure_filename
+from werkzeug.datastructures import CombinedMultiDict
 
-app = Flask(__name__)
+app = Flask(__name__,static_url_path='/static')
 app.debug = True
 
 #config mysql
@@ -164,6 +169,7 @@ def profile():
         #fetchall
         profi = cur.fetchone()
         app.logger.info(profi['Username'])
+        app.logger.info(profi['Profile_pic'])
         if result > 0:
                 #for second time users
             return render_template('profile.html', profi=profi)
@@ -223,18 +229,31 @@ def profile_a():
         Location = form.Location.data
         Experience = form.Experience.data
         Language = form.Language.data
+        Profile_pic = request.files['file']
+        filename = secure_filename(Profile_pic.filename)
 
+        app.logger.info(Profile_pic)
+        app.logger.info(filename)
+
+        #connection open
         cur = mysql.connection.cursor()
-        app.logger.info(session['Type_Acc'])
+        #app.logger.info(session['Type_Acc'])
         #artist database
+
+        #upload
+        if filename != None:
+            Profile_pic.save('static/upload/img/'+Username+'.profile.jpg')
+            filename = Username+'.avatar.jpg'
+
+
         result = cur.execute("SELECT * FROM profile_a WHERE Username = %s ",[Username])
 
         if result > 0:
                 #for second time users
-            cur.execute("UPDATE profile_a SET Username =  %s,First_name =  %s,Last_name =  %s,About =  %s,Genre =  %s,Location =  %s,Experience =  %s,Language =  %s WHERE Username = %s",(Username,First_name,Last_name,About,Genre,Location,Experience,Language,Username))
+            cur.execute("UPDATE profile_a SET Username =  %s,First_name =  %s,Last_name =  %s,About =  %s,Genre =  %s,Location =  %s,Experience =  %s,Language =  %s, Profile_pic=%s WHERE Username = %s",(Username,First_name,Last_name,About,Genre,Location,Experience,Language,filename,Username))
         else:
                 #for first time
-            cur.execute("INSERT INTO profile_a(Username,First_name,Last_name,About,Genre,Location,Experience,Language) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)", (Username,First_name,Last_name,About,Genre,Location,Experience,Language))
+            cur.execute("INSERT INTO profile_a(Username,First_name,Last_name,About,Genre,Location,Experience,Language,Profile_pic) VALUES(%s, %s, %s, %s, %s, %s, %s, %s,%s)", (Username,First_name,Last_name,About,Genre,Location,Experience,Language,filename))
 
         mysql.connection.commit()
 
@@ -253,20 +272,32 @@ def profile_a():
         About = form1.About.data
         Location = form1.Location.data
         Language = form1.Language.data
+        Profile_pic = request.files['file']
+        filename = secure_filename(Profile_pic.filename)
+
+        app.logger.info(Profile_pic)
+        app.logger.info(filename)
 
 
             #cursor
         cur = mysql.connection.cursor()
         #app.logger.info(session['Type_Acc'])
             #database
+
+        #File save
+        if filename != None:
+            Profile_pic.save('static/upload/img/'+Username+'.profile.jpg')
+            filename = Username+'.avatar.jpg'
+
+
         result = cur.execute("SELECT * FROM profile_b WHERE Username = %s ",[Username])
 
         if result > 0:
                 #for second time users
-            cur.execute("UPDATE profile_b SET Username =  %s,First_name =  %s,Last_name =  %s,About =  %s,Location =  %s,Language =  %s WHERE Username = %s",(Username,First_name,Last_name,About,Location,Language,Username))
+            cur.execute("UPDATE profile_b SET Username =  %s,First_name =  %s,Last_name =  %s,About =  %s,Location =  %s,Language =  %s,Profile_pic=%s WHERE Username = %s",(Username,First_name,Last_name,About,Location,Language,filename,Username))
         else:
                 #for first time
-            cur.execute("INSERT INTO profile_b(Username,First_name,Last_name,About,Location,Language) VALUES(%s, %s, %s, %s, %s, %s)", (Username,First_name,Last_name,About,Location,Language))
+            cur.execute("INSERT INTO profile_b(Username,First_name,Last_name,About,Location,Language,Profile_pic) VALUES(%s, %s, %s, %s, %s, %s)", (Username,First_name,Last_name,About,Location,Language,filename))
 
         mysql.connection.commit()
         cur.close()

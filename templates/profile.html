@@ -1,29 +1,49 @@
 {% extends "layout.html" %}
 
 {% block body %}
-  <h1>Profile <small> welcome {{session.Username}}</small></h1>
-  <a class= 'btn btn-primary' href="/profile/edit">Edit</a>
-
-  <div class="jumbotron text-left">
-   <ul class="list_group">
-     {% if session.Type_Acc == 'Artist': %}
-     <li>Username: {{session.Username}}</li>
-     <li>First Name: {{profi.First_name}}</li>
-     <li>Lastname: {{profi.Last_name}}</li>
-     <li>About: {{profi.About}}</li>
-     <li>Genre: {{profi.Genre}}</li>
-     <li>Location: {{profi.Location}}</li>
-     <li>Experience: {{profi.Experience}}</li>
-     <li>Language: {{profi.Language}}</li>
-     {% else %}
-     <li>Username: {{session.Username}}</li>
-     <li>First Name: {{profi.First_name}}</li>
-     <li>Lastname: {{profi.Last_name}}</li>
-     <li>About: {{profi.About}}</li>
-     <li>Location: {{profi.Location}}</li>
-     <li>Language: {{profi.Language}}</li>
-     {% endif %}
-   </ul>
+  <div class="container">
+    <h1><p>Welcome {{session.Username}}</p></h1>
   </div>
-
+  <div class="container">
+  <div class="card card-outline-info img-thumbnail" style="width: 20rem;">
+    {% if profi.Profile_pic == None : %}
+    <img class="card-img-top " src="static/img/avatar.jpg" alt="Profile Pic"/>
+    {% else %}
+    <img class="card-img-top" src="{{url_for('static',filename='upload/img/'+profi.Profile_pic)}}" alt="Profile Pic"/>
+    {% endif %}
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-4">
+        {% if session.Type_Acc == 'Artist' and profi.Username == session.user: %}
+        <a class='btn btn-lg btn-primary float-center' href="/profile/edit">Edit</a>
+        {% else %}
+        <a class="btn btn-outline-dark">Book Artist</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="card card-outline-info" style="width: 20rem;hight: 20rem;">
+    {% if session.Type_Acc == 'Artist': %}
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">Username: {{session.Username}}</li>
+      <li class="list-group-item">First Name: {{profi.First_name}}</li>
+      <li class="list-group-item">Lastname: {{profi.Last_name}}</li>
+      <li class="list-group-item">About: {{profi.About}}</li>
+      <li class="list-group-item">Genre: {{profi.Genre}}</li>
+      <li class="list-group-item">Location: {{profi.Location}}</li>
+      <li class="list-group-item">Experience: {{profi.Experience}}</li>
+      <li class="list-group-item">Language: {{profi.Language}}</li>
+    </ul>
+    {% else %}
+      <li class="list-group-item">Username: {{session.Username}}</li>
+      <li class="list-group-item">First Name: {{profi.First_name}}</li>
+      <li class="list-group-item">Lastname: {{profi.Last_name}}</li>
+      <li class="list-group-item">About: {{profi.About}}</li>
+      <li class="list-group-item">Location: {{profi.Location}}</li>
+      <li class="list-group-item">Language: {{profi.Language}}</li>
+    {% endif %}
+    </div>
+    </div>
+  </div>
 {% endblock %}

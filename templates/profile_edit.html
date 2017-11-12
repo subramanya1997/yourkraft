@@ -1,12 +1,14 @@
 {% extends "layout.html" %}
 
-{% block body %}
+{% block Fullscreen %}
+<div class="container">
    <div class="jumbotron text-left">
      <h1>Profile</h1>
      <small>welcome {{session.Username}}</small>
      {% from 'include/_formhelpers.html' import render_field %}
      {% if session.Type_Acc == 'Artist': %}
-     <form class="" action="" method="POST">
+     <form class="" enctype = "multipart/form-data" action="" method="POST" >
+
        <div class="form-group">
          {{render_field(form.First_name,class_="form-control")}}
        </div>
@@ -28,11 +30,14 @@
        <div class="form-group">
          {{render_field(form.Language,class_="form-control")}}
        </div>
-       <p><input type="submit" class="btn btn-primary" value="submit"></p>
+        <div class="form-group">
+          <p><input type='file' name='file' multiple='' required></p>
+        </div>
+       <p><input type="submit" class="btn btn-primary" value="submit" ></p>
      </form>
      {% endif %}
      {% if session.Type_Acc == "Business": %}
-     <form class="" action="" method="POST">
+     <form class="" enctype = "multipart/form-data" action="" method="POST" >
        <div class="form-group">
          {{render_field(form1.First_name,class_="form-control")}}
        </div>
@@ -48,8 +53,12 @@
        <div class="form-group">
          {{render_field(form1.Language,class_="form-control")}}
        </div>
+       <div class="form-group">
+         <p><input type='file' name='file' multiple='' required></p>
+       </div>
        <p><input type="submit" class="btn btn-primary" value="submit"></p>
      </form>
      {% endif %}
    </div>
+</div>
 {% endblock %}
