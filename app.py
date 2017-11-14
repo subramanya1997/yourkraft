@@ -273,7 +273,8 @@ def dashboard():
 @app.route('/profile/<string:id>/')
 @is_logged_in
 def profile(id):
-
+    session["account"] = True
+    app.logger.info(session["account"])
     if id == session['Username']:
         cur = mysql.connection.cursor()
         #app.logger.info(id)
@@ -314,15 +315,17 @@ def profile(id):
     else:
         cur = mysql.connection.cursor()
         app.logger.info(id)
-        session["account"] = False
+        app.logger.info(session["account"])
         if session['Type_Acc'] == 'Business':
+
             result = cur.execute("SELECT * FROM profile_a WHERE Username = %s ",[id])
 
             #fetchall
             profi = cur.fetchone()
-            app.logger.info(profi['Username'])
             if result > 0:
                 #for second time users
+                session["account"] = False
+                app.logger.info(session["account"])
                 return render_template('profile.html', profi=profi)
                 cur.close()
             else:
