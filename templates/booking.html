@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block body %}
+  <div class="container">
+    <h1><p>Welcome {{session.Username}}</p></h1>
+    <h1><p>Booking {{id}}</p></h1>
+  </div>
+  <div class="container">
+  {% from 'include/_formhelpers.html' import render_field %}
+  <form class="" enctype = "multipart/form-data" action="" method="POST" >
+
+    <div class="form-group">
+      {{render_field(form.Detail,class_="form-control")}}
+    </div>
+    <div class="form-group">
+      {{render_field(form.Venue,class_="form-control")}}
+    </div>
+    <div class="form-group">
+      {{render_field(form.Genre,class_="form-control")}}
+    </div>
+    <div class="form-group">
+      {{render_field(form.Amount,class_="form-control")}}
+    </div>
+    <div class="form-group">
+      {{render_field(form.Date,class_="form-control")}}
+    </div>
+    <p><input type="submit" class="btn btn-primary" value="submit" ></p>
+  </form>
+  </div>
+{% endblock %}

@@ -2,44 +2,86 @@
 
 {% block body %}
   <div class="container">
-    <h1><p>Welcome {{session.Username}}</p></h1>
-  </div>
-  <div class="container">
-  <div class="card card-outline-info img-thumbnail" style="width: 20rem;">
-    {% if profi.Profile_pic == None : %}
-    <img class="card-img-top " src="static/img/avatar.jpg" alt="Profile Pic"/>
-    {% else %}
-    <img class="card-img-top" src="{{url_for('static',filename='upload/img/'+profi.Profile_pic)}}" alt="Profile Pic"/>
-    {% endif %}
-  </div>
-  <div class="card" style="width: 20rem;">
-        {% if session.Type_Acc == 'Artist' and profi.Username == session.Username: %}
-        <a class='btn btn-primary' href="/profile/edit">Edit</a>
-        {% else %}
-        <a class="btn btn-outline-dark">Book Artist</a>
-        {% endif %}
-  </div>
-  <div class="card card-outline-info" style="width: 20rem;hight: 20rem;">
-    {% if session.Type_Acc == 'Artist': %}
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item">Username: {{session.Username}}</li>
-      <li class="list-group-item">First Name: {{profi.First_name}}</li>
-      <li class="list-group-item">Lastname: {{profi.Last_name}}</li>
-      <li class="list-group-item">About: {{profi.About}}</li>
-      <li class="list-group-item">Genre: {{profi.Genre}}</li>
-      <li class="list-group-item">Location: {{profi.Location}}</li>
-      <li class="list-group-item">Experience: {{profi.Experience}}</li>
-      <li class="list-group-item">Language: {{profi.Language}}</li>
-    </ul>
-    {% else %}
-      <li class="list-group-item">Username: {{session.Username}}</li>
-      <li class="list-group-item">First Name: {{profi.First_name}}</li>
-      <li class="list-group-item">Lastname: {{profi.Last_name}}</li>
-      <li class="list-group-item">About: {{profi.About}}</li>
-      <li class="list-group-item">Location: {{profi.Location}}</li>
-      <li class="list-group-item">Language: {{profi.Language}}</li>
-    {% endif %}
+    <div class="row">
+      <h1><p>Welcome {{session.Username}}</p></h1>
     </div>
+    <div class="row">
+      <div class="col-xs-6 col-sm-4">
+        <div class="card card-outline-info img-thumbnail" style="width: 20rem;">
+          {% if profi.Profile_pic == None : %}
+          <img class="card-img-top " src="/static/img/avatar.jpg" alt="Profile Pic"/>
+          {% else %}
+          <img class="card-img-top" src="{{url_for('static',filename='upload/img/'+profi.Profile_pic)}}" alt="Profile Pic"/>
+          {% endif %}
+        </div>
+        <hr>
+      </div>
+      <div class="col-12 col-md-8">
+        <table class="table table-hover">
+          <h3>Booking</h3>
+          <hr>
+          <thead>
+            <tr>
+              <th scope="col">Username</th>
+              <th scope="col">Details</th>
+              <th scope="col">Venue</th>
+              <th scope="col">Date</th>
+              <th scope="col">Payment</th>
+              <th scope="col">Genre</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for booking in bookings  %}
+            <tr>
+              <td><a class="text-dark" href="/profile/{{booking.Username_B}}">@{{booking.Username_B}}</a></td>
+              <td>{{booking.Detail}}</td>
+              <td>{{booking.Venue}}</td>
+              <td>{{booking.Date}}</td>
+              <td>{{booking.Amount}}</td>
+              <td>{{booking.Genre}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6 col-sm-4">
+        <div class="card" style="width: 20rem;">
+          {% if session.Type_Acc == 'Artist' and profi.Username == session.Username: %}
+          <a class='btn btn-primary' href="/profile/edit">Edit</a>
+          {% else %}
+          <a class="btn btn-outline-dark" href="/artist/booking/{{profi.Username}}">Book Artist</a>
+          {% endif %}
+        </div>
+        <hr>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6 col-sm-4">
+        <div class="card card-outline-info" style="width: 20rem;hight: 20rem;">
+          {% if session.Type_Acc == 'Artist': %}
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">Username: {{session.Username}}</li>
+            <li class="list-group-item">First Name: {{profi.First_name}}</li>
+            <li class="list-group-item">Lastname: {{profi.Last_name}}</li>
+            <li class="list-group-item">About: {{profi.About}}</li>
+            <li class="list-group-item">Genre: {{profi.Genre}}</li>
+            <li class="list-group-item">Location: {{profi.Location}}</li>
+            <li class="list-group-item">Experience: {{profi.Experience}}</li>
+            <li class="list-group-item">Language: {{profi.Language}}</li>
+          </ul>
+          {% else %}
+            <li class="list-group-item">Username: {{session.Username}}</li>
+            <li class="list-group-item">First Name: {{profi.First_name}}</li>
+            <li class="list-group-item">Lastname: {{profi.Last_name}}</li>
+            <li class="list-group-item">About: {{profi.About}}</li>
+            <li class="list-group-item">Location: {{profi.Location}}</li>
+            <li class="list-group-item">Language: {{profi.Language}}</li>
+            {% endif %}
+        </div>
+        <hr>
+      </div>
     </div>
   </div>
 {% endblock %}

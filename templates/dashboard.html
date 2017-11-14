@@ -1,5 +1,48 @@
 {% extends "layout.html" %}
 
 {% block body %}
-  <h1>dashboard <small> welcome {{session.Username}}</small></h1>
+  <h1>Bookings: {{session.Username}}</h1>
+
+  <table class="table table-striped">
+    <tr>
+      <th>Business</th>
+      <th>Artist</th>
+      <th>Details</th>
+      <th>Venue</th>
+      <th>Date</th>
+      <th>Payment</th>
+      <th>Genre</th>
+      <th>Status</th>
+      <th></th>
+      <th></th>
+    </tr>
+    {% for booking in bookings  %}
+      <tr>
+        <td><a href="/profile/{{booking.Username_B}}">{{booking.Username_B}}</a></td>
+        <td><a href="/profile/{{booking.Username_A}}">{{booking.Username_A}}</a></td>
+        <td>{{booking.Detail}}</td>
+        <td>{{booking.Venue}}</td>
+        <td>{{booking.Date}}</td>
+        <td>{{booking.Amount}}</td>
+        <td>{{booking.Genre}}</td>
+        <td>{{booking.Status}}</td>
+        {% if booking.Status == 'Pending': %}
+          {% if booking.Username_A == session.Username:  %}
+          <td><a class="btn btn-outline-dark pullright" href="/accept/{{booking.id}}">Accept</a></td>
+          <td><a class="btn btn-outline-dark pullright" href="/decline/{{booking.id}}">Decline</a></td>
+          {% endif %}
+        {% endif %}
+        {% if booking.Status == 'Decline': %}
+          {% if booking.Username_B == session.Username:  %}
+          <td>
+            <form class="" action="{{url_for('delete_b',id=booking.id)}}" method="POST">
+              <input type="hidden" name="_method" value="DELETE">
+              <input class="btn btn-outline-danger" type="submit" value="Delete">
+            </form>
+          </td>
+          {% endif %}
+        {% endif %}
+      </tr>
+    {% endfor %}
+  </table>
 {% endblock %}

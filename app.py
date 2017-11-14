@@ -2,7 +2,7 @@ import os
 from flask import Flask, render_template,request,flash,redirect,url_for,session,logging
 from data import Articles
 from flask_mysqldb import MySQL
-from wtforms import Form,IntegerField,StringField,TextAreaField,FileField,PasswordField,validators,SelectField
+from wtforms import Form,DateField,IntegerField,StringField,TextAreaField,FileField,PasswordField,validators,SelectField
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileRequired
 from passlib.hash import sha256_crypt
@@ -48,7 +48,39 @@ def articles():
         return render_template('articles.html', msg=msg)
 
     cur.close()
-    return render_template('articles.html', )
+
+
+class Booking(Form):
+    Detail = TextAreaField('Details',[validators.DataRequired(),validators.Length(min=1,max=250)])
+    Venue = StringField('Venue',[validators.DataRequired(),validators.Length(min=6,max=30)])
+    Genre = SelectField('Genre',choices=[('Pop','Pop'),('Rock','Rock')])
+    Amount = IntegerField('Quotation',[validators.NumberRange(min=3000)])
+    Date = DateField('Date',format='%Y-%m-%d')
+
+@app.route('/artist/booking/<string:id>', methods=['GET','POST'])
+def booking(id):
+    form = Booking(request.form)
+    if request.method ==  'POST' and form.validate():
+        Detail = form.Detail.data
+        Venue = form.Venue.data
+        Genre = form.Genre.data
+        Amount = form.Amount.data
+        Date1 = str(form.Date.data)
+
+        #create cur
+        cur = mysql.connection.cursor()
+
+        #execute
+        cur.execute("INSERT INTO booking(Username_B,Username_A,Venue,Amount,Date,Genre,Detail) VALUES(%s,%s,%s,%s,%s,%s,%s)",(session['Username'],id,Venue,Amount,Date1,Genre,Detail))
+
+        mysql.connection.commit()
+
+        cur.close()
+
+        flash('Booking sent, Wait for confirmation..','info')
+
+        return redirect(url_for('dashboard'))
+    return render_template('booking.html',form=form,id=id)
 
 #single article
 @app.route('/article/<string:id>/')
@@ -161,10 +193,77 @@ def logout():
     flash('You are now logged out', 'success')
     return redirect(url_for('login'))
 
+#accept
+@app.route('/accept/<string:id>/')
+@is_logged_in
+def accept(id):
+    cur = mysql.connection.cursor()
+    #app.logger.info(id)
+
+    result = cur.execute("SELECT * FROM booking WHERE id = %s ",id)
+    if result>0:
+        app.logger.info(id)
+        cur.execute("UPDATE booking SET Status = %s WHERE id = %s",('Accepted',id))
+        flash("You have accepted..",'success')
+        cur.connection.commit()
+
+    cur.close()
+
+
+    return redirect(url_for('dashboard'))
+
+#ignore
+@app.route('/decline/<string:id>/')
+@is_logged_in
+def decline(id):
+    cur = mysql.connection.cursor()
+    #app.logger.info(id)
+    result = cur.execute("SELECT * FROM booking WHERE id = %s ",id)
+    if result>0:
+        app.logger.info(id)
+        cur.execute("UPDATE booking SET Status = %s WHERE id = %s",('Decline',id))
+        flash("You have declined..",'danger')
+        cur.connection.commit()
+
+    cur.close()
+    return redirect(url_for('dashboard'))
+
+#delete booking
+@app.route('/delete_b/<string:id>/',methods=['POST'])
+@is_logged_in
+def delete_b(id):
+    #cursor
+    cur = mysql.connection.cursor()
+
+    #execute
+    cur.execute("DELETE FROM booking WHERE id = %s",[id])
+
+    cur.connection.commit()
+
+    cur.close()
+    flash("Booking Deleted...",'success')
+    return redirect(url_for('dashboard'))
+
+
 # dashboard
 @app.route('/dashboard')
 @is_logged_in
 def dashboard():
+
+    cur = mysql.connection.cursor()
+    result = cur.execute("SELECT * FROM booking WHERE Username_A = %s OR Username_B = %s ",[session['Username'],session['Username']])
+
+    booking = cur.fetchall()
+
+    if result > 0:
+        return render_template('dashboard.html',bookings=booking)
+
+    else:
+        msg='Nothing Yet!! Please wait..'
+        return render_template('dashboard.html',msg=msg)
+
+    cur.close()
+
     return render_template('dashboard.html')
 
 
@@ -172,37 +271,75 @@ def dashboard():
 @app.route('/profile/<string:id>/')
 @is_logged_in
 def profile(id):
-    cur = mysql.connection.cursor()
-    app.logger.info(session['Type_Acc'])
 
-    if session['Type_Acc'] == 'Artist':
-        result = cur.execute("SELECT * FROM profile_a WHERE Username = %s ",[session['Username']])
+    if id == session['Username']:
+        cur = mysql.connection.cursor()
+        #app.logger.info(id)
 
-        #fetchall
-        profi = cur.fetchone()
-        app.logger.info(profi['Username'])
-        app.logger.info(profi['Profile_pic'])
-        if result > 0:
+        if session['Type_Acc'] == 'Artist':
+            result = cur.execute("SELECT * FROM profile_a WHERE Username = %s ",[session['Username']])
+
+            #fetchone
+            profi = cur.fetchone()
+
+            result1=cur.execute("SELECT * FROM booking WHERE Username_A = %s",[session['Username']])
+            booking = cur.fetchall()
+            #booking fetching
+
+
+            app.logger.info(profi['Username'])
+            if result > 0:
                 #for second time users
-            return render_template('profile.html', profi=profi)
-            cur.close()
-        else:
+                return render_template('profile.html', profi=profi,bookings = booking)
+                cur.close()
+            else:
                 #for first time
-            cur.close()
-            return redirect(url_for('profile_a'))
+                cur.close()
+                return redirect(url_for('profile_a'))
+        else:
+            result = cur.execute("SELECT * FROM profile_b WHERE Username = %s ",[session['Username']])
+
+            profi = cur.fetchone()
+
+            if result > 0:
+                #for second time users
+                return render_template('profile.html', profi=profi,)
+                cur.close()
+            else:
+                #for first time
+                cur.close()
+                return redirect(url_for('profile_a'))
     else:
-        result = cur.execute("SELECT * FROM profile_b WHERE Username = %s ",[session['Username']])
+        cur = mysql.connection.cursor()
+        app.logger.info(id)
 
-        profi = cur.fetchone()
+        if session['Type_Acc'] == 'Artist':
+            result = cur.execute("SELECT * FROM profile_a WHERE Username = %s ",[id])
 
-        if result > 0:
+            #fetchall
+            profi = cur.fetchone()
+            app.logger.info(profi['Username'])
+            if result > 0:
                 #for second time users
-            return render_template('profile.html', profi=profi)
-            cur.close()
-        else:
+                return render_template('profile.html', profi=profi)
+                cur.close()
+            else:
                 #for first time
-            cur.close()
-            return redirect(url_for('profile_a'))
+                cur.close()
+                return redirect(url_for('profile_a'))
+        else:
+            result = cur.execute("SELECT * FROM profile_b WHERE Username = %s ",[id])
+
+            profi = cur.fetchone()
+
+            if result > 0:
+                #for second time users
+                return render_template('profile.html', profi=profi)
+                cur.close()
+            else:
+                #for first time
+                cur.close()
+                return redirect(url_for('profile_a'))
 
     return render_template('profile.html',id=id)
 
@@ -213,7 +350,7 @@ class Profile_A(Form):
     About = TextAreaField('About',[validators.DataRequired(),validators.Length(min=1,max=250)])
     Genre = SelectField('Genre',choices=[('Pop','Pop'),('Rock','Rock')])
     Location = SelectField('Location',choices=[('Bangalore','Bangalore'),('Mysore','Mysore')])
-    Experience = IntegerField('Experience',[validators.NumberRange(min=0, max=10)])
+    Experience = IntegerField('Experience',[validators.NumberRange(min=0)])
     Language = SelectField('Language',choices=[('English','English'),('Kannada','Kannada')])
 
 
