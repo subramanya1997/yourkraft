@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template,request,flash,redirect,url_for,session,logging
-from data import Articles
+#from data import Articles
 from flask_mysqldb import MySQL
 from wtforms import Form,DateField,IntegerField,StringField,TextAreaField,FileField,PasswordField,validators,SelectField
 from flask_wtf import FlaskForm
@@ -24,7 +24,7 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 mysql = MySQL(app)
 
 
-Articles = Articles()
+#Articles = Articles()
 
 @app.route('/')
 def index():
