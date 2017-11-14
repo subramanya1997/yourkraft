@@ -114,6 +114,7 @@ def register():
         session['logged_in'] = True
         session['Username'] = Username
         session['Type_Acc'] = Type_Acc
+        session['account'] = True
         result = cur.execute("SELECT * FROM users WHERE Username = %s ",[Username])
         #if username is taken
         if result > 0:
@@ -160,6 +161,7 @@ def login():
                 session['logged_in'] = True
                 session['Username'] = Username
                 session['Type_Acc'] = Type_Acc
+                session['account'] = True
 
                 flash('you are now logged in', 'sucess')
                 return redirect(url_for('dashboard'))
@@ -312,8 +314,8 @@ def profile(id):
     else:
         cur = mysql.connection.cursor()
         app.logger.info(id)
-
-        if session['Type_Acc'] == 'Artist':
+        session["account"] = False
+        if session['Type_Acc'] == 'Business':
             result = cur.execute("SELECT * FROM profile_a WHERE Username = %s ",[id])
 
             #fetchall
@@ -424,10 +426,6 @@ def profile_a():
         Profile_pic = request.files['file']
         filename = secure_filename(Profile_pic.filename)
 
-        app.logger.info(Profile_pic)
-        app.logger.info(filename)
-
-
             #cursor
         cur = mysql.connection.cursor()
         #app.logger.info(session['Type_Acc'])
@@ -446,7 +444,7 @@ def profile_a():
             cur.execute("UPDATE profile_b SET Username =  %s,First_name =  %s,Last_name =  %s,About =  %s,Location =  %s,Language =  %s,Profile_pic=%s WHERE Username = %s",(Username,First_name,Last_name,About,Location,Language,filename,Username))
         else:
                 #for first time
-            cur.execute("INSERT INTO profile_b(Username,First_name,Last_name,About,Location,Language,Profile_pic) VALUES(%s, %s, %s, %s, %s, %s)", (Username,First_name,Last_name,About,Location,Language,filename))
+            cur.execute("INSERT INTO profile_b(Username,First_name,Last_name,About,Location,Language,Profile_pic) VALUES(%s, %s, %s, %s, %s, %s, %s)", (Username,First_name,Last_name,About,Location,Language,filename))
 
         mysql.connection.commit()
         cur.close()

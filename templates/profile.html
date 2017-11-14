@@ -48,9 +48,9 @@
     <div class="row">
       <div class="col-xs-6 col-sm-4">
         <div class="card" style="width: 20rem;">
-          {% if session.Type_Acc == 'Artist' and profi.Username == session.Username: %}
+          {% if profi.Username == session.Username: %}
           <a class='btn btn-primary' href="/profile/edit">Edit</a>
-          {% else %}
+          {% elif session.Type_Acc == 'Artist' %}
           <a class="btn btn-outline-dark" href="/artist/booking/{{profi.Username}}">Book Artist</a>
           {% endif %}
         </div>
@@ -60,7 +60,7 @@
     <div class="row">
       <div class="col-xs-6 col-sm-4">
         <div class="card card-outline-info" style="width: 20rem;hight: 20rem;">
-          {% if session.Type_Acc == 'Artist': %}
+          {% if session.Type_Acc == 'Artist' or session.account == False: %}
           <ul class="list-group list-group-flush">
             <li class="list-group-item">Username: {{session.Username}}</li>
             <li class="list-group-item">First Name: {{profi.First_name}}</li>
@@ -72,13 +72,15 @@
             <li class="list-group-item">Language: {{profi.Language}}</li>
           </ul>
           {% else %}
+          <ul class="list-group list-group-flush">
             <li class="list-group-item">Username: {{session.Username}}</li>
             <li class="list-group-item">First Name: {{profi.First_name}}</li>
             <li class="list-group-item">Lastname: {{profi.Last_name}}</li>
             <li class="list-group-item">About: {{profi.About}}</li>
             <li class="list-group-item">Location: {{profi.Location}}</li>
             <li class="list-group-item">Language: {{profi.Language}}</li>
-            {% endif %}
+          </ul>
+          {% endif %}
         </div>
         <hr>
       </div>
