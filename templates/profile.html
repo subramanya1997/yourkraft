@@ -50,7 +50,7 @@
         <div class="card" style="width: 20rem;">
           {% if profi.Username == session.Username: %}
           <a class='btn btn-primary' href="/profile/edit">Edit</a>
-          {% elif session.Type_Acc == 'Artist' %}
+          {% elif session.Type_Acc == 'Artist' or session.account == False: %}
           <a class="btn btn-outline-dark" href="/artist/booking/{{profi.Username}}">Book Artist</a>
           {% endif %}
         </div>
