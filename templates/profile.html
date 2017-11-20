@@ -62,7 +62,7 @@
         <div class="card card-outline-info" style="width: 20rem;hight: 20rem;">
           {% if session.Type_Acc == 'Artist' or session.account == False: %}
           <ul class="list-group list-group-flush">
-            <li class="list-group-item">Username: {{session.Username}}</li>
+            <li class="list-group-item">Username: {{profi.Username}}</li>
             <li class="list-group-item">First Name: {{profi.First_name}}</li>
             <li class="list-group-item">Lastname: {{profi.Last_name}}</li>
             <li class="list-group-item">About: {{profi.About}}</li>
@@ -70,10 +70,11 @@
             <li class="list-group-item">Location: {{profi.Location}}</li>
             <li class="list-group-item">Experience: {{profi.Experience}}</li>
             <li class="list-group-item">Language: {{profi.Language}}</li>
+            <li class="list-group-item">Fee: {{profi.Fee}}</li>
           </ul>
           {% else %}
           <ul class="list-group list-group-flush">
-            <li class="list-group-item">Username: {{session.Username}}</li>
+            <li class="list-group-item">Username: {{profi.Username}}</li>
             <li class="list-group-item">First Name: {{profi.First_name}}</li>
             <li class="list-group-item">Lastname: {{profi.Last_name}}</li>
             <li class="list-group-item">About: {{profi.About}}</li>

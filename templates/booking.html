@@ -2,8 +2,7 @@
 
 {% block body %}
   <div class="container">
-    <h1><p>Welcome {{session.Username}}</p></h1>
-    <h1><p>Booking {{id}}</p></h1>
+    <h1><p>Booking <small><a class="text-muted" href="/profile/{{id}}">@{{id}}</a></small></p></h1>
   </div>
   <div class="container">
   {% from 'include/_formhelpers.html' import render_field %}

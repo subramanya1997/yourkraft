@@ -34,13 +34,23 @@ def index():
 def about():
     return render_template('about.html')
 
-@app.route('/artist')
+class filter1(Form):
+    Username = StringField("",[validators.Length(min=6,max=30)], render_kw={"placeholder": "Username"})
+    Fee = SelectField('',choices=[('NULL','Fee'),('5000','<5000'),('10000','<10000')], render_kw={"placeholder": "Fee"})
+
+@app.route('/artist', methods= ['GET','POST'])
 def articles():
     cur = mysql.connection.cursor()
+    if request.method == 'POST':
+        Fee = request.form['Fee']
+        app.logger.info(Fee)
+        result = cur.execute("SELECT * FROM profile_a WHERE Fee <= %s",[Fee])
 
-    result = cur.execute("SELECT * FROM profile_a")
+    else:
+        result = cur.execute("SELECT * FROM profile_a")
+
     artists = cur.fetchall()
-    app.logger.info(artists)
+    #app.logger.info(artists)
     if result > 0:
         return render_template('articles.html', artists=artists)
     else:
@@ -48,7 +58,6 @@ def articles():
         return render_template('articles.html', msg=msg)
 
     cur.close()
-
 
 class Booking(Form):
     Detail = TextAreaField('Details',[validators.DataRequired(),validators.Length(min=1,max=250)])
@@ -202,7 +211,7 @@ def accept(id):
     cur = mysql.connection.cursor()
     #app.logger.info(id)
 
-    result = cur.execute("SELECT * FROM booking WHERE id = %s ",id)
+    result = cur.execute("SELECT * FROM booking WHERE id = %s ",[id])
     if result>0:
         app.logger.info(id)
         cur.execute("UPDATE booking SET Status = %s WHERE id = %s",('Accepted',id))
@@ -220,7 +229,7 @@ def accept(id):
 def decline(id):
     cur = mysql.connection.cursor()
     #app.logger.info(id)
-    result = cur.execute("SELECT * FROM booking WHERE id = %s ",id)
+    result = cur.execute("SELECT * FROM booking WHERE id = %s ",[id])
     if result>0:
         app.logger.info(id)
         cur.execute("UPDATE booking SET Status = %s WHERE id = %s",('Decline',id))
@@ -316,17 +325,23 @@ def profile(id):
         cur = mysql.connection.cursor()
         app.logger.info(id)
         app.logger.info(session["account"])
-        if session['Type_Acc'] == 'Business':
+        if session['Type_Acc'] == 'Business' or session['Type_Acc'] == 'Artist' :
 
             result = cur.execute("SELECT * FROM profile_a WHERE Username = %s ",[id])
 
+
             #fetchall
             profi = cur.fetchone()
+
+            result1=cur.execute("SELECT * FROM booking WHERE Username_A = %s",[id])
+            booking = cur.fetchall()
+
+
             if result > 0:
                 #for second time users
                 session["account"] = False
                 app.logger.info(session["account"])
-                return render_template('profile.html', profi=profi)
+                return render_template('profile.html', profi=profi,bookings=booking)
                 cur.close()
             else:
                 #for first time
@@ -357,7 +372,7 @@ class Profile_A(Form):
     Location = SelectField('Location',choices=[('Bangalore','Bangalore'),('Mysore','Mysore')])
     Experience = IntegerField('Experience',[validators.NumberRange(min=0)])
     Language = SelectField('Language',choices=[('English','English'),('Kannada','Kannada')])
-
+    Fee = IntegerField('Fee',[validators.NumberRange(min=1000)])
 
 #Profile form for business edit
 class Profile_B(Form):
@@ -383,6 +398,7 @@ def profile_a():
         Location = form.Location.data
         Experience = form.Experience.data
         Language = form.Language.data
+        Fee = form.Fee.data
         Profile_pic = request.files['file']
         filename = secure_filename(Profile_pic.filename)
 
@@ -404,10 +420,10 @@ def profile_a():
 
         if result > 0:
                 #for second time users
-            cur.execute("UPDATE profile_a SET Username =  %s,First_name =  %s,Last_name =  %s,About =  %s,Genre =  %s,Location =  %s,Experience =  %s,Language =  %s, Profile_pic=%s WHERE Username = %s",(Username,First_name,Last_name,About,Genre,Location,Experience,Language,filename,Username))
+            cur.execute("UPDATE profile_a SET Username =  %s,First_name =  %s,Last_name =  %s,About =  %s,Genre =  %s,Location =  %s,Experience =  %s,Language =  %s,Fee =  %s, Profile_pic=%s WHERE Username = %s",(Username,First_name,Last_name,About,Genre,Location,Experience,Language,Fee,filename,Username))
         else:
                 #for first time
-            cur.execute("INSERT INTO profile_a(Username,First_name,Last_name,About,Genre,Location,Experience,Language,Profile_pic) VALUES(%s, %s, %s, %s, %s, %s, %s, %s,%s)", (Username,First_name,Last_name,About,Genre,Location,Experience,Language,filename))
+            cur.execute("INSERT INTO profile_a(Username,First_name,Last_name,About,Genre,Location,Experience,Language,Fee,Profile_pic) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (Username,First_name,Last_name,About,Genre,Location,Experience,Language,Fee,filename))
 
         mysql.connection.commit()
 
