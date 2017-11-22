@@ -34,9 +34,6 @@ def index():
 def about():
     return render_template('about.html')
 
-class filter1(Form):
-    Username = StringField("",[validators.Length(min=6,max=30)], render_kw={"placeholder": "Username"})
-    Fee = SelectField('',choices=[('NULL','Fee'),('5000','<5000'),('10000','<10000')], render_kw={"placeholder": "Fee"})
 
 @app.route('/artist', methods= ['GET','POST'])
 def articles():
